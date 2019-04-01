@@ -1,0 +1,6 @@
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+rm(list=ls())
+library(tidyverse)
+library(MASS)
+data(seismic.dat)
+seismic = as.matrix(read.table('../data/seismic.dat'))
