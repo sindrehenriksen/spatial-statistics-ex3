@@ -12,7 +12,7 @@ seismic.obs <- ggplot(seismic.df,aes(x= X1,y= X2)) +
   scale_fill_gradient(low ="white",
                       high ="black")+
   theme_minimal()
-
+seismic.obs
 ggsave("../figures/seismic_data.pdf", plot = seismic.obs, 
        device = NULL, path = NULL, scale = 1, width = 5.5, 
        height = 5.5, units = "in", dpi = 300, limitsize = TRUE)
