@@ -2,7 +2,45 @@
 \label{sec:p1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{a)}
+The '\textit{seismic.dat}' data contains seismic data on a regular grid $(75\times75)$, $\matr{L}_D$, denoted as $\{d(\vect{x});\vect{x}\in \matr{L}_D\};d(\vect{x})\in \R$.
+The seismic data has the likelihood model given by the equation
+\begin{equation}
+    [d_i\given\vect{l}] = \begin{cases}
+                                0.02 + U_i, & l_i = 0 \Rightarrow \mathrm{sand} \\
+                                0.08 + U_i, & l_i = 1 \Rightarrow \mathrm{shale}
+                             \end{cases}
+                            , i = 1, 2, ..., n,
+    \label{eq:likelihood}
+\end{equation}
 
+where $U_i \overset{\mathrm{iid}}{\sim}\N\{0,0.06^2\}$. This means that we can rewrite Equation \ref{eq:likelihood} to 
+\begin{equation}
+    [d_i\given\vect{l}] = \begin{cases}
+                                A_i\overset{\mathrm{iid}}{\sim}\N\{0.02,0.06^2\}, & l_i = 0 \Rightarrow \mathrm{sand} \\
+                                B_i\overset{\mathrm{iid}}{\sim}\N\{0.08,0.06^2\}, & l_i = 1 \Rightarrow \mathrm{shale}
+                             \end{cases}
+                            , i = 1, 2, ..., n.
+    \label{eq:likelihood2}
+\end{equation}
+The likelihood model $p(\vect{d}\given \vect{l})$ is then given by 
+\begin{equation}
+    \begin{array}{rcl}
+        [\vect{d}\given\vect{l}] \sim p(\vect{d}\given\vect{l}) & = & \prod\limits_{i=1}^n p(d_i\given\vect{l}) \\
+         & = & \prod\limits_{i=1}^n \begin{cases}
+                                        \N\{0.02,0.06^2\}, & l_i = 0 \\
+                                        \N\{0.08,0.06^2\}, & l_i = 1
+                                    \end{cases}\\
+         & \propto & \exp\left\{\sum\limits_{l_i = 0} \frac{(d_i - 0.2)^2}{2\cdot 0.06^2} + \sum\limits_{l_i = 1} \frac{(d_i - 0.08)^2}{2\cdot 0.06^2}\right\}
+    \end{array}.
+    \label{eq:likelihood3}
+\end{equation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/boxplot_bili.pdf}
+    \caption{A boxplot of the bilirubin data. On the y-axis the logarithm of the concentration of bilirubin in the blood of three different persons that are grouped on the x-axis.}
+    \label{fig:boxplot_bili}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{b)}
