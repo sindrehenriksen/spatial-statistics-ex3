@@ -44,4 +44,20 @@ b_sims_plot =
 ggsave("../figures/b_sims.pdf", plot=b_sims_plot,
        width=6.5, height=5, units="in")
 
+b_mean_plot =
+  dplyr::select(seismic.df, X1, X2) %>%
+  add_column(mean=p_li1_di) %>%
+  ggplot(aes(x=X1, y=X2, fill=mean)) +
+  geom_raster() +
+  theme_minimal()
+ggsave("../figures/b_mean.pdf", plot=b_mean_plot,
+       width=5.5, height=4, units="in")
 
+b_var_plot =
+  dplyr::select(seismic.df, X1, X2) %>%
+  add_column(var=p_li1_di * (1 - p_li1_di)) %>%
+  ggplot(aes(x=X1, y=X2, fill=var)) +
+  geom_raster() +
+  theme_minimal()
+ggsave("../figures/b_var.pdf", plot=b_var_plot,
+       width=5.5, height=4, units="in")
