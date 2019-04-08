@@ -17,7 +17,7 @@ seismic.obs =
   scale_fill_gradient2() +
   theme_minimal()
 ggsave("../figures/seismic_data.pdf", plot = seismic.obs,
-       width=5.5, height=4, units="in")
+       width=5, height=3.5, units="in")
 
 ## ---- b
 n = nrow(seismic)
@@ -52,7 +52,7 @@ b_mean_plot =
   geom_raster() +
   theme_minimal()
 ggsave("../figures/b_mean.pdf", plot=b_mean_plot,
-       width=5.5, height=4, units="in")
+       width=5, height=3.5, units="in")
 
 # Plot variance
 b_var_plot =
@@ -62,7 +62,7 @@ b_var_plot =
   geom_raster() +
   theme_minimal()
 ggsave("../figures/b_var.pdf", plot=b_var_plot,
-       width=5.5, height=4, units="in")
+       width=5, height=3.5, units="in")
 
 # Plot MMAP
 b_mmap_plot =
@@ -74,4 +74,4 @@ b_mmap_plot =
   theme_minimal() +
   labs(fill="MMAP")
 ggsave("../figures/b_mmap.pdf", plot=b_mmap_plot,
-       width=5.5, height=4, units="in")
+       width=5, height=3.5, units="in")
