@@ -40,17 +40,40 @@ The likelihood model $p(\vect{d}\given \vect{l})$ is then given by
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{b)}
-With a uniform form prior $p(\vect{l}) = const$, the posterior becomes
+We consider a uniform form prior $\prob(\vect{l}) = const$. We have $\prob(\vect{l}) = \prod_{i=1}^n \prob(l_i)$ and $\prob(l_i) = 1/2$. Assuming the data are collected independently, i.e. $\prob(\vect{d}) = \prod_{i=1}^n \prob(d_i)$, we get the posterior
 %
-\begin{equation}
-\label{eq:b_post}
-\begin{split}
-    p(\vect{l} \given \vect{d}) &= \frac{p(\vect{d} \given \vect{l}) p(\vect{l})}{\sum_{\vect{l'} \in L_D} p(\vect{d} \given \vect{l}) p(\vect{l})} \\
-    &= \frac{p(\vect{d} \given \vect{l})}{\sum_{\vect{l'} \in L_D} p(\vect{d} \given \vect{l}))} \\
-    &= \frac{\exp\left\{\frac{1}{0.0072} \sum_{i=1}^n \left[(1-l_i)(d_i - 0.02)^2 + l_i(d_i - 0.08)^2\right]\right\}}{\sum_{\vect{l'} \in L_D} \exp\left\{\frac{1}{0.0072} \sum_{i=1}^n \left[(1-l_i')(d_i - 0.02)^2 + l_i'(d_i - 0.08)^2\right]\right\}} \, .
-\end{split}
-\end{equation}
+\begin{align*}
+    \prob(\vect{l} \given \vect{d}) &= \frac{\prob(\vect{d} \given \vect{l}) \prob(\vect{l})}{\prob(\vect{d})} \\
+    &= \prod_{i=1}^n \frac{\prob(d_i \given l_i) \prob(l_i)}{\prob(d_i)} \\
+    &= \prod_{i=1}^n \prob(l_i \given d_i) \, ,
+\end{align*}
 %
+where $\prob(d_i) = 1/2 \cdot [\prob(d_i \given l_i=0) + \prob(d_i \given l_i=1)]$. Thus the values of $l_i$, $i = 1, \dots, n$ are independent Bernoulli random variables with parameters $p_i = \prob(l_i \given d_i)$. The expectation of the $i$th element is $p_i$ and the variance is $p_i(1-p_i)$. 
+
+\figref{fig:b_sims}, \figref{fig:b_mean} and \figref{fig:b_var} show 10 simulations from the posterior distribution, the posterior mean and the posterior variance, respectively. We see that the mean is high where the measurements are high and low where the measurements are low. The variance is low both where the measurements are high and low, while it is larger in ares where the measurements are not clearly indicating whether the is shale or sand in an area. The posterior mean $\E[\vect{l} | \vect{d}]$ is the probability that an area contains shale (1).
+
+The maximum marginal posterior predictor $\text{MMAP}\left\{\vect{l}|\vect{d}\right\}$ is the vector of values maximizing $p(l_i \given d_i)$, $i = 1, \dots, n$, which are 1 where $p(l_i \given d_i) > 0.5$ and 0 else.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/b_sims.pdf}
+    \caption{10 simulations from the posterior given in b).}
+    \label{fig:b_sims}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/b_mean.pdf}
+    \caption{Posterior mean as derived in b).}
+    \label{fig:b_mean}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/b_var.pdf}
+    \caption{Posterior variance as derived in b).}
+    \label{fig:b_var}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{c)}
