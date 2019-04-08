@@ -2,7 +2,7 @@
 \label{sec:p1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{a)}
-The '\textit{seismic.dat}' data contains seismic data on a regular grid $(75\times75)$, $\matr{L}_D$, denoted as $\{d(\vect{x});\vect{x}\in \matr{L}_D\};d(\vect{x})\in \R$.
+The '\textit{seismic.dat}' data contains seismic data on a regular grid $(75\times75)$, $L_D$, denoted as $\{d(\vect{x}) \ssep \vect{x}\in L_D\} \ssep d(\vect{x})\in \R$, and visually represented by the map in Figure \ref{fig:data}.
 The seismic data has the likelihood model given by the equation
 \begin{equation}
     [d_i\given\vect{l}] = \begin{cases}
@@ -25,26 +25,32 @@ where $U_i \overset{\mathrm{iid}}{\sim}\N\{0,0.06^2\}$. This means that we can r
 The likelihood model $p(\vect{d}\given \vect{l})$ is then given by 
 \begin{equation}
     \begin{array}{rcl}
-        [\vect{d}\given\vect{l}] \sim p(\vect{d}\given\vect{l}) & = & \prod\limits_{i=1}^n p(d_i\given\vect{l}) \\
-         & = & \prod\limits_{i=1}^n \begin{cases}
-                                        \N\{0.02,0.06^2\}, & l_i = 0 \\
-                                        \N\{0.08,0.06^2\}, & l_i = 1
-                                    \end{cases}\\
-         & \propto & \exp\left\{\sum\limits_{l_i = 0} \frac{(d_i - 0.2)^2}{2\cdot 0.06^2} + \sum\limits_{l_i = 1} \frac{(d_i - 0.08)^2}{2\cdot 0.06^2}\right\}
-    \end{array}.
+        [\vect{d}\given\vect{l}] \sim p(\vect{d}\given\vect{l}) & = & \prod\limits_{i=1}^n p(d_i\given l_i) \\
+        & = & (0.0072\pi)^{-n/2} \prod\limits_{i=1}^n l_i \exp\left\{\frac{(d_i - 0.08)^2}{0.0072} \right\} + (1-l_i) \exp\left\{\frac{(d_i - 0.02)^2}{0.0072} \right\} \\
+         & = & (0.0072\pi)^{-n/2} \exp\left\{\frac{1}{0.0072} \left[\sum\limits_{i \st l_i = 0} (d_i - 0.02)^2 + \sum\limits_{i \st l_i = 1} (d_i - 0.08)^2\right]\right\} \, .
+    \end{array}
     \label{eq:likelihood3}
 \end{equation}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/boxplot_bili.pdf}
-    \caption{A boxplot of the bilirubin data. On the y-axis the logarithm of the concentration of bilirubin in the blood of three different persons that are grouped on the x-axis.}
-    \label{fig:boxplot_bili}
+    \includegraphics[scale=0.95]{figures/seismic_data.pdf}
+    \caption{Map of the seismic data $d(\vect{x})$ on a grid $\matr{L_D}$}
+    \label{fig:data}
 \end{figure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{b)}
-
+With a uniform form prior $p(\vect{l}) = const$, the posterior becomes
+%
+\begin{equation}
+\label{eq:b_post}
+\begin{split}
+    p(\vect{l} \given \vect{d}) &= \frac{p(\vect{d} \given \vect{l}) p(\vect{l})}{\sum_{\vect{l'} \in L_D} p(\vect{d} \given \vect{l}) p(\vect{l})} \\
+    &= \frac{p(\vect{d} \given \vect{l})}{\sum_{\vect{l'} \in L_D} p(\vect{d} \given \vect{l}))} \\
+    &= \frac{\exp\left\{\frac{1}{0.0072} \sum_{i=1}^n \left[(1-l_i)(d_i - 0.02)^2 + l_i(d_i - 0.08)^2\right]\right\}}{\sum_{\vect{l'} \in L_D} \exp\left\{\frac{1}{0.0072} \sum_{i=1}^n \left[(1-l_i')(d_i - 0.02)^2 + l_i'(d_i - 0.08)^2\right]\right\}} \, .
+\end{split}
+\end{equation}
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{c)}
