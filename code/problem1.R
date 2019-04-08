@@ -44,6 +44,7 @@ b_sims_plot =
 ggsave("../figures/b_sims.pdf", plot=b_sims_plot,
        width=6.5, height=5, units="in")
 
+# Plot mean
 b_mean_plot =
   dplyr::select(seismic.df, X1, X2) %>%
   add_column(mean=p_li1_di) %>%
@@ -53,6 +54,7 @@ b_mean_plot =
 ggsave("../figures/b_mean.pdf", plot=b_mean_plot,
        width=5.5, height=4, units="in")
 
+# Plot variance
 b_var_plot =
   dplyr::select(seismic.df, X1, X2) %>%
   add_column(var=p_li1_di * (1 - p_li1_di)) %>%
@@ -60,4 +62,16 @@ b_var_plot =
   geom_raster() +
   theme_minimal()
 ggsave("../figures/b_var.pdf", plot=b_var_plot,
+       width=5.5, height=4, units="in")
+
+# Plot MMAP
+b_mmap_plot =
+  dplyr::select(seismic.df, X1, X2) %>%
+  add_column(mmap=as.integer(p_li1_di > 0.5)) %>%
+  ggplot(aes(x=X1, y=X2, fill=factor(mmap))) +
+  geom_raster() +
+  scale_fill_brewer() +
+  theme_minimal() +
+  labs(fill="MMAP")
+ggsave("../figures/b_mmap.pdf", plot=b_mmap_plot,
        width=5.5, height=4, units="in")
