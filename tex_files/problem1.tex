@@ -52,8 +52,6 @@ where $\prob(d_i) = 1/2 \cdot [\prob(d_i \given l_i=0) + \prob(d_i \given l_i=1)
 
 \figref{fig:b_sims}, \figref{fig:b_mean} and \figref{fig:b_var} show 10 simulations from the posterior distribution, the posterior mean and the posterior variance, respectively. We see that the mean is high where the measurements are high and low where the measurements are low. The variance is low both where the measurements are high and low, while it is larger in ares where the measurements are not clearly indicating whether the is shale or sand in an area. The posterior mean $\E[\vect{l} | \vect{d}]$ is the probability that an area contains shale (1).
 
-The maximum marginal posterior predictor $\text{MMAP}\left\{\vect{l}|\vect{d}\right\}$ is the vector of values maximizing $p(l_i \given d_i)$, $i = 1, \dots, n$, which are 1 where $p(l_i \given d_i) > 0.5$ and 0 else.
-
 \begin{figure}
     \centering
     \includegraphics{figures/b_sims.pdf}
@@ -73,6 +71,15 @@ The maximum marginal posterior predictor $\text{MMAP}\left\{\vect{l}|\vect{d}\ri
     \includegraphics{figures/b_var.pdf}
     \caption{Posterior variance as derived in b).}
     \label{fig:b_var}
+\end{figure}
+
+The maximum marginal posterior predictor $\text{MMAP}\left\{\vect{l}|\vect{d}\right\}$ is the vector of values maximizing $p(l_i \given d_i)$, $i = 1, \dots, n$, which are 1 where $p(l_i \given d_i) > 0.5$ and 0 else. A plot of the MMAP is shown in \figref{fig:b_mmap}.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/b_mmap.pdf}
+    \caption{Maximum marginal posterior predictor as derived in b).}
+    \label{fig:b_mmap}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
