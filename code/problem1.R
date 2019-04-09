@@ -4,6 +4,7 @@ rm(list=ls())
 library(tidyverse)
 library(MASS)
 library(reshape)
+library(ggplot2)
 
 ## ---- a
 seismic = as.vector(
@@ -16,8 +17,9 @@ seismic.obs =
   geom_raster() +
   scale_fill_gradient2() +
   theme_minimal()
-ggsave("../figures/seismic_data.pdf", plot = seismic.obs,
-       width=5, height=3.5, units="in")
+print(seismic.obs)
+#ggsave("../figures/seismic_data.pdf", plot = seismic.obs,
+#       width=5, height=3.5, units="in")
 
 ## ---- b
 n = nrow(seismic)
@@ -75,3 +77,65 @@ b_mmap_plot =
   labs(fill="MMAP")
 ggsave("../figures/b_mmap.pdf", plot=b_mmap_plot,
        width=5, height=3.5, units="in")
+
+## ---- c
+
+#Plotting data from comparable domain
+complit_mat = as.matrix(read.table('../data/complit.dat', row.names=NULL))
+complit_vec = as.vector(t(complit_mat))
+complit.df = melt(vapply(seq(1, 66), rep, rep(1,66), times=66))
+complit.df$value = complit_vec
+
+complit.obs =
+  ggplot(complit.df, aes(x=X1, y=X2, fill=value)) +
+  geom_raster() +
+  #scale_fill_gradient2() +
+  theme_minimal()
+print(complit.obs)
+ggsave("../figures/complit_data.pdf", plot = complit.obs,
+        width=5, height=3.5, units="in")
+
+#Finding neighbors
+find_neighbors = function(values, i, dim, wrap = FALSE){
+  n = length(values)
+  jumps = c(-dim, -1, 1, dim)
+  valid_jump = ifelse((i + jumps) < 1 | (i + jumps) > n, FALSE,TRUE)
+  
+  if((i %% dim) == 1){
+    valid_jump[2] <- FALSE
+  }
+  if((i %% dim) == 0){
+    valid_jump[3] <- FALSE
+  }
+  
+  neighbors = i + jumps[valid_jump]
+  
+  #Add functionality for wrapping boundary conditions
+}
+
+#log likelihood for 1 position
+loglik1 = function(beta, values, i , dim){
+  possible_vals = c(0,1)
+  neighb= find_neighbors(values, i, dim, wrap = FALSE)
+  norm_const = exp(beta*sum(possible_vals[1]==values[neighb])) + 
+    exp(beta*sum(possible_vals[2]==values[neighb]))
+  return(beta*sum(values[i]==values[neighb]) - log(norm_const))
+}
+
+loglikAll = function(beta, values, dim){
+  n = length(values)
+  log_p = rep(0,n)
+  for(i in 1:n){
+    log_p[i] = loglik1(beta, values, i, dim)
+  }
+  return(sum(log_p))
+}
+
+#Estimating beta
+beta_start = 1
+beta_hat = optim(beta_start, loglikAll, 
+                 values = complit_vec, dim = 66, 
+                 method = 'Brent', upper = 6, lower = 0,
+                 control = list(fnscale = -1))
+
+
