@@ -84,6 +84,78 @@ The maximum marginal posterior predictor $\text{MMAP}\left\{\vect{l}|\vect{d}\ri
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{c)}
+We will now consider a Markov RF prior model for $\{l(\vect{x}; \vect{x} \in L_D\}$, represented by the vector $\vect{l}$.
+This can be specified by the Markov formulation or Gibbs formulation. The Markov formulation for the prior is 
+
+\begin{equation}
+    p(l_i|l_j; j \in \vect{n}_i) = const_M \times \exp{\{\beta \sum_{j\in \vect{n}_i} I(l_i = l_j)\}}; \quad i = 1,2,...n,
+\end{equation}
+where $\vect{n}_i$ is the neighborhood of grid node $i$, consisting of the four closest grid nodes and $I(.)$ is the indicator function. This is the Ising model. 
+
+This neighboring system corresponds to a clique system where each clique consists of two neighboring nodes, and we write it
+\begin{equation}
+    \vect{C}_L = \{<i,j>; i,j \in L_D\}
+\end{equation}
+
+Then the associated Gibbs formulation of the prior is
+
+\begin{align}
+    p(\vect{l}) &= const_G \times \prod_{<i,j>} \exp{\{\beta I(l_i = l_j)\}}\\
+    & = const_G \times \exp{\{\beta \sum_{<i,j>} I(l_i = l_j)\}}.
+\end{align}
+
+Further, we can find expressions for the posterior distributions $p(\vect{l}|\vect{d})$ and $p(l_i | \vect{d}, \vect{l}_{-i})$, $i = 1, \dots, n$ and index $-i$ meaning all nodes except $i$. 
+
+\begin{align*}
+    p(l_i | \vect{d}, \vect{l}_{-i}) &= \frac{p(\vect{d}|\vect{l})p(l_i|\vect{l}_{-i})}{p(\vect{d}|\vect{l}_{-i})}  = \frac{\prod_{k} p(d_k|l_k)\times p(l_i|l_j; j\in \vect{n}_i)}{p(d_i|\vect{l}_{-i})\prod_{k\neq i}p(d_k|l_k)}\\
+    & = \frac{p(d_i|l_i)p(l_i|l_j; j\in \vect{n}_i)}{p(d_i|\vect{l}_{-i})},
+\end{align*}
+
+where $p(d_i|\vect{l}_{-i}) = \sum_{l_i^*\in \{0,1\}} p(d_i|l_i^*)p(l_i^*|l_j; j\in \vect{n}_i)$ and $p(d_i|l_i)$ and $p(l_i|l_j; j\in \vect{n}_i)$ have been specified previously. 
+
+\begin{equation*}
+    p(\vect{l}|\vect{d}) = \frac{p(\vect{d}|\vect{l})p(\vect{l})}{p(\vect{d})} = \frac{p(\vect{d}|\vect{l})p(\vect{l})}{\sum_{\vect{l^*}}p(\vect{d}|\vect{l^*})p(\vect{l^*})} ,
+\end{equation*}
+
+so that  $p(\vect{d})$ is a sum of all $2^n$ possible configurations of the $n$-vector $\vect{l}$.
+
+The aim is to produce realizations from the posterior distribution $p(\vect{l}|\vect{d})$ and find the posterior mean $\E[\vect{l} | \vect{d}]$, variance $\Var\{\vect{l} | \vect{d}\}$ and alternative prediction $\textrm{MMAP}\{\vect{l} | \vect{d}\}$. 
+
+We want to use observations from a comparable domain $D_c \subset \R^2$ to train the prior model, i.e estimate $\beta$. The data from that area is displayed in Figure \ref{fig:complit_data}. Here we have exact observations, and call these $\vect{l}^o$.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/complit_data.pdf}
+    \caption{Data from comparable domain $D_c$}
+    \label{fig:complit_data}
+\end{figure}
+
+
+We use a maximum psedo-likelihood procedure to estimate $\beta$. We would want to find Maximal Marginal Likelihood (MML) estimate by maximizing $p(\vect{d}; \beta)$, but we have seen that $p(\vect{d})$ is very computer demanding. Thus, we instead maximize the Marginal pseudo-Likelihood (MpL), 
+
+\begin{align*}
+     &\prod_{i=1}^n p(d_i, d_j; j \in \vect{n}_i)\\
+    &\approx \prod_{i=1}^n \sum_{[l_i^*, l_j^*; j\in \vect{n}_i] \in \{0,1\}} \prod_{j=i, j\in \vect{n}_i} p(d_i|l_i^*)p(l_i^*|l_j^*, j\in \vect{n}_i; \beta)\\
+    &:= \hat{p}(\vect{d}; \beta).
+\end{align*}
+ 
+Since we have exact observations, this simplifies to 
+\begin{equation*}
+    \hat{p}(\vect{d}; \beta) = \hat{p}(\vect{l}^o; \beta) = \prod_{i=1}^n p(l_i^o|l_j^o, j\in \vect{n}_i; \beta), 
+\end{equation*}
+
+with 
+\begin{equation*}
+    p(l_i^o|l_j^o, j\in \vect{n}_i; \beta) = \frac{\exp{\{\beta \sum_{j\in \vect{n}_i} I(l_i = l_j)\}}}{\sum_{l_i^*\in \{0,1\}}\exp{\{\beta \sum_{j\in \vect{n}_i} I(l_i^* = l_j)\}}}.
+\end{equation*}
+
+Thus, 
+\begin{equation*}
+    \hat\beta = \textrm{argmax}_{\beta} \{\log(\hat{p}(\vect{l}^o; \beta))\},
+\end{equation*}
+which we find using the optim() function in R to be $\hat\beta = 1.72$.
+
+We now want to generate realizations from the posterior distribution $p(\vect{l}|\vect{d}; \hat\beta)$. We do this by using MCMC/Gibbs sampler. To avoid boundary problems for the cliques, we use wrapping boundary conditions, which means that we let the system vertically and horizontally periodic, so that when we need a value that is located outside the grid, we use the value on the other side of the grid, vertically or horizontally.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
