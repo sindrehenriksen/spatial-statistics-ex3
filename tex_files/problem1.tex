@@ -106,10 +106,13 @@ Then the associated Gibbs formulation of the prior is
 
 Further, we can find expressions for the posterior distributions $p(\vect{l}|\vect{d})$ and $p(l_i | \vect{d}, \vect{l}_{-i})$, $i = 1, \dots, n$ and index $-i$ meaning all nodes except $i$. 
 
-\begin{align*}
+\begin{align}
+\begin{split}
     p(l_i | \vect{d}, \vect{l}_{-i}) &= \frac{p(\vect{d}|\vect{l})p(l_i|\vect{l}_{-i})}{p(\vect{d}|\vect{l}_{-i})}  = \frac{\prod_{k} p(d_k|l_k)\times p(l_i|l_j; j\in \vect{n}_i)}{p(d_i|\vect{l}_{-i})\prod_{k\neq i}p(d_k|l_k)}\\
     & = \frac{p(d_i|l_i)p(l_i|l_j; j\in \vect{n}_i)}{p(d_i|\vect{l}_{-i})},
-\end{align*}
+\end{split}
+\label{eq:full_cond}
+\end{align}
 
 where $p(d_i|\vect{l}_{-i}) = \sum_{l_i^*\in \{0,1\}} p(d_i|l_i^*)p(l_i^*|l_j; j\in \vect{n}_i)$ and $p(d_i|l_i)$ and $p(l_i|l_j; j\in \vect{n}_i)$ have been specified previously. 
 
@@ -119,7 +122,7 @@ where $p(d_i|\vect{l}_{-i}) = \sum_{l_i^*\in \{0,1\}} p(d_i|l_i^*)p(l_i^*|l_j; j
 
 so that  $p(\vect{d})$ is a sum of all $2^n$ possible configurations of the $n$-vector $\vect{l}$.
 
-The aim is to produce realizations from the posterior distribution $p(\vect{l}|\vect{d})$ and find the posterior mean $\E[\vect{l} | \vect{d}]$, variance $\Var\{\vect{l} | \vect{d}\}$ and alternative prediction $\textrm{MMAP}\{\vect{l} | \vect{d}\}$. 
+The aim is to produce realizations from the posterior distribution $p(\vect{l}|\vect{d})$ and find the posterior mean $\E[\vect{l} | \vect{d}]$, variance $\Var\{\vect{l} | \vect{d}\}$ and alternative prediction $\textrm{MMAP}\{\vect{l} | \vect{d}\}$. We will have to use an MCMC sampler to generate realizations from the posterior, and then $\E[\vect{l} | \vect{d}]$, $\Var\{\vect{l} | \vect{d}\}$ and $\textrm{MMAP}\{\vect{l} | \vect{d}\} = \textrm{argmax}_{l_i}\{ p(l_i|d_i\}$ will be estimated numerically. The latter prediction is calculated simply by counting the frequency of $0$ and $1$ in each position over the posterior realizations, and assigning the one with the highest frequency.
 
 We want to use observations from a comparable domain $D_c \subset \R^2$ to train the prior model, i.e estimate $\beta$. The data from that area is displayed in Figure \ref{fig:complit_data}. Here we have exact observations, and call these $\vect{l}^o$.
 
@@ -157,6 +160,48 @@ which we find using the optim() function in R to be $\hat\beta = 1.72$.
 
 We now want to generate realizations from the posterior distribution $p(\vect{l}|\vect{d}; \hat\beta)$. We do this by using MCMC/Gibbs sampler. To avoid boundary problems for the cliques, we use wrapping boundary conditions, which means that we let the system vertically and horizontally periodic, so that when we need a value that is located outside the grid, we use the value on the other side of the grid, vertically or horizontally.
 
+In the Gibbs sampler, we propose a value (either $0$ or $1$) for one location at a time, from $p(l_i|\vect{d}, \vect{l}_{-i})$ as given in equation \eqref{eq:full_cond}.
+Because of the properties of this full conditional distribution, the acceptance probability is always 1, so the step is always accepted. It is obvious that we will have to propose to change quite a few locations before the the chain can converge and between realizations that we can assume are independent. Therefore, realizations of the chain is only saved for every $n$th proposal. This will be called one \textit{iteration}. I.e, when we run the MCMC $3000$ steps, $n\cdot 3000$ locations have been proposed to change.
+
+To assess the question of convergence, we display the fraction of 0 and 1 in the Markov Chain. This is shown in Figure \ref{fig:MCMC_frac}.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/.pdf}
+    \caption{}
+    \label{fig:MCMC_frac}
+\end{figure}
+
+Realizations
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/.pdf}
+    \caption{}
+    \label{fig:MCMC_realiz}
+\end{figure}
+
+Plots of mean etc
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/.pdf}
+    \caption{}
+    \label{fig:MCMC_mean}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/.pdf}
+    \caption{}
+    \label{fig:MCMC_var}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{figures/.pdf}
+    \caption{}
+    \label{fig:MCMC_MMAP}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{d)}
