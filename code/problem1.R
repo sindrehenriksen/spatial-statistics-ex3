@@ -222,20 +222,8 @@ GibbsOneIt = function(dval, lval, dim, beta, sigma_d, mean_d){
   
     final_p0 = p_lid0_upper/(p_lid0_upper + p_lid1_upper)
     
-    
-    #SILIUS SIN KODE
-    #part <- (-(1 / (2 * sigma_d^2)) * (dval[i] - mean_d)^2)
-    #num_sim_0 <- sum(lval[neighbors] == 0)
-    #num_sim_1 <- 4 - num_sim_0
-    #log_p_0 <- part[1] + (beta * num_sim_0)
-    #log_p_1 <- part[2] + (beta * num_sim_1) 
-    #p_0 <- exp(log_p_0)
-    #p_1 <- exp(log_p_1) 
-    #sum_p <- p_0 + p_1 
-    
-    #final_p0 <- p_0 / sum_p
-    
     prev_i = lval[i]
+    
     #Propose new value
     u = runif(1)
     if(u<final_p0){
@@ -289,7 +277,9 @@ frac_0 = 1-frac_1
 ggplot(data.frame(frac = c(frac_1,frac_0), id = as.factor(rep(c(1,0), each = num_it)), 
                   x = rep(1:num_it, 2)))+
   geom_path(aes(x = x, y = frac, col = id))+
-  labs(col = 'value')
+  labs(col = 'value', x = 'Iteration', y = 'Fraction')
+ggsave("../figures/fractionMCMC.pdf", plot=last_plot(),
+       width=5, height=3.5, units="in")
   
 #Define burn-in period
 burnin = 1:500
@@ -323,6 +313,8 @@ post.mean =
   geom_raster() +
   theme_minimal()
 print(post.mean)
+ggsave("../figures/c_mean.pdf", plot=post.mean,
+       width=5, height=3.5, units="in")
 
 
 #Posterior variance
@@ -332,6 +324,8 @@ post.var =
   geom_raster() +
   theme_minimal()
 print(post.var)
+ggsave("../figures/c_variance.pdf", plot=post.var,
+       width=5, height=3.5, units="in")
 
 #MMAP
 position_frac1 = rowSums(l_MCMC[,-burnin])/(num_it-length(burnin))
@@ -343,3 +337,6 @@ post.MMAP =
   theme_minimal() +
   labs(fill="MMAP")
 print(post.MMAP)
+ggsave("../figures/c_MMAP.pdf", plot=post.MMAP,
+       width=5, height=3.5, units="in")
+
