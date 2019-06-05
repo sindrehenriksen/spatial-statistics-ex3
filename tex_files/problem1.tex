@@ -158,51 +158,54 @@ Thus,
 \end{equation*}
 which we find using the optim() function in R to be $\hat\beta = 1.72$.
 
-We now want to generate realizations from the posterior distribution $p(\vect{l}|\vect{d}; \hat\beta)$. We do this by using MCMC/Gibbs sampler. To avoid boundary problems for the cliques, we use wrapping boundary conditions, which means that we let the system vertically and horizontally periodic, so that when we need a value that is located outside the grid, we use the value on the other side of the grid, vertically or horizontally.
+We now want to generate realizations from the posterior distribution $p(\vect{l}|\vect{d}; \hat\beta)$. We do this by using MCMC/Gibbs sampler. To avoid boundary problems, we use wrapping boundary conditions, which means that we let the system vertically and horizontally periodic, so that when we need a value that is located outside the grid, we use the value on the other side of the grid, vertically or horizontally.
 
 In the Gibbs sampler, we propose a value (either $0$ or $1$) for one location at a time, from $p(l_i|\vect{d}, \vect{l}_{-i})$ as given in equation \eqref{eq:full_cond}.
-Because of the properties of this full conditional distribution, the acceptance probability is always 1, so the step is always accepted. It is obvious that we will have to propose to change quite a few locations before the the chain can converge and between realizations that we can assume are independent. Therefore, realizations of the chain is only saved for every $n$th proposal. This will be called one \textit{iteration}. I.e, when we run the MCMC $3000$ steps, $n\cdot 3000$ locations have been proposed to change.
+Because of the properties of this full conditional distribution, the acceptance probability is always 1, so the step is always accepted. It is obvious that we will have to propose to change quite a few locations before the the chain can converge and between realizations that we can assume are independent. Therefore, realizations of the chain is only saved for every $n = 75 \times 75$ proposals. This will be called one iteration. That is, when we run the MCMC $2000$ iterations, $n\cdot 2000$ locations have been proposed to change.
 
-To assess the question of convergence, we display the fraction of 0 and 1 in the Markov Chain. This is shown in Figure \ref{fig:MCMC_frac}.
+To assess the question of convergence, we display the fraction of 0 and 1 in the Markov Chain. This is shown in Figure \ref{fig:MCMC_frac}. By this trace plot, it at least seems that the fractions have stabilized. This is of course not a proof of convergence. In particular, it should be noted that it is possible to reach the situation were all tiles become 0 (sand), and it is very hard to get out of this stage. This has not happened in this iteration, and we assume that the chain gives us samples from the posterior distribution after just a short burn-in period. To be sure, we disregard the first $500$ samples.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.95]{figures/.pdf}
-    \caption{}
+    \includegraphics[scale=0.95]{figures/fractionMCMC.pdf}
+    \caption{MCMC trace plot of the fraction of grid points with value 0 (sand) and 1 (shale).}
     \label{fig:MCMC_frac}
 \end{figure}
 
-Realizations
+In Figure \ref{fig:MCMC_realiz}, 10 realizations of the posterior distribution are shown. These are drawn from the MCMC samples, evenly spaced out between sample 600 and 2000. This means that a lot of changes are proposed between each realization, so that we can assume they are independent. The realizations are similar, but have individual differences, just as we would expect if they are drawn from the same distribution.
+
 \begin{figure}
     \centering
-    \includegraphics[scale=0.95]{figures/.pdf}
-    \caption{}
+    \includegraphics[scale=0.95]{figures/realizations_MCMC.pdf}
+    \caption{10 independent realizations from the posterior distribution for the Markov RF, obtained by MCMC.}
     \label{fig:MCMC_realiz}
 \end{figure}
 
-Plots of mean etc
+We can now compute and plot the posterior mean, variance and MMAP for each grid node. These are displayed in Figures \ref{fig:MCMC_mean}, \ref{fig:MCMC_var} and \ref{fig:MCMC_MMAP}, respectively. We see that in the MMAP, and also indicated in the posterior mean, we get a clear area of shale in the upper right corner ($l_i = 1$), and sand everywhere else. The realizations have the same trend, though the shape of shale area differ somewhat and they get some small areas or single grid points with shale in between the sand. The variance is only somwhat large for a very small area, as the difference in shape is not very large between the realizations. We also observe that the degree of clustering is very similar to the data from the comparable domain $D_c$ displayed in Figure \ref{fig:complit_data}, as this is the data we have used to estimate $\beta$. The posterior distribution is affected by this parameter from the prior model, as well as by the nature of the observed data, shown in Figure \ref{fig:data}.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.95]{figures/.pdf}
-    \caption{}
+    \includegraphics[scale=0.95]{figures/c_mean.pdf}
+    \caption{Posterior mean, obtained from a Markov RF prior model using MCMC.}
     \label{fig:MCMC_mean}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.95]{figures/.pdf}
-    \caption{}
+    \includegraphics[scale=0.95]{figures/c_variance.pdf}
+    \caption{Posterior variance, obtained from a Markov RF prior model using MCMC}
     \label{fig:MCMC_var}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.95]{figures/.pdf}
-    \caption{}
+    \includegraphics[scale=0.95]{figures/c_MMAP.pdf}
+    \caption{Maximum marginal posterior predictor, obtained from a Markov RF prior model using MCMC}
     \label{fig:MCMC_MMAP}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \paragraph{d)}
+
+We see that the results obtained in b) and c) are quite different. In b) we assume independence between the the values $l_i, i= 1,\dots,n$, which means that we get very limited information, and we have a lot of mixing in the posterior realizations. In both cases, we get somewhat more shale ($l_i = 1$) in the upper right corner, just as we have observed the highest values in this corner, but the picture is a lot clearer in c). Here, the values drawn from the posterior are a lot more clustered. This shows that adding a dependency of only the four closest neighbors yields a significant difference.
 
